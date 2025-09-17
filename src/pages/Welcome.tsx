@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Clock, BookOpen, Target } from "lucide-react";
+import { BookOpen, Target } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
+import scholarSyncLogo from "@/assets/scholarsync-logo.jpg";
 
 const Welcome = () => {
   const navigate = useNavigate();
@@ -22,10 +23,14 @@ const Welcome = () => {
         <div className="text-center space-y-4">
           <div className="flex justify-center mb-6">
             <div className="p-4 rounded-2xl bg-white/20 backdrop-blur-sm">
-              <Clock className="h-16 w-16 text-white" />
+              <img 
+                src={scholarSyncLogo} 
+                alt="ScholarSync Logo" 
+                className="h-16 w-16 object-contain"
+              />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-white">TimeWise</h1>
+          <h1 className="text-4xl font-bold text-white">ScholarSync</h1>
           <p className="text-xl text-white/90">AI-Powered Timetable Manager</p>
         </div>
 
@@ -62,7 +67,7 @@ const Welcome = () => {
 
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
-              New to TimeWise?{" "}
+              New to ScholarSync?{" "}
               <button 
                 onClick={() => navigate("/register")}
                 className="text-primary hover:underline font-medium"
