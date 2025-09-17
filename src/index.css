@@ -1,0 +1,157 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Timetable App Design System - Professional & Modern */
+
+@layer base {
+  :root {
+    --background: 151 33% 94%;
+    --foreground: 242 36% 16%;
+
+    --card: 151 33% 96%;
+    --card-foreground: 242 36% 16%;
+
+    --popover: 151 33% 96%;
+    --popover-foreground: 242 36% 16%;
+
+    --primary: 198 19% 51%;
+    --primary-foreground: 151 33% 94%;
+
+    --secondary: 171 25% 69%;
+    --secondary-foreground: 242 36% 16%;
+
+    --muted: 171 25% 85%;
+    --muted-foreground: 198 19% 35%;
+
+    --accent: 171 25% 69%;
+    --accent-foreground: 242 36% 16%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 151 33% 94%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 242 36% 16%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 151 33% 94%;
+
+    --border: 171 25% 80%;
+    --input: 171 25% 80%;
+    --ring: 198 19% 51%;
+
+    --radius: 0.75rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(198 19% 51%) 0%, hsl(171 25% 69%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(142 71% 45%) 0%, hsl(158 64% 52%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(151 33% 96%) 0%, hsl(171 25% 92%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(242 36% 16% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(242 36% 16% / 0.1), 0 2px 4px -2px hsl(242 36% 16% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(242 36% 16% / 0.1), 0 4px 6px -4px hsl(242 36% 16% / 0.1);
+    --shadow-glow: 0 0 0 1px hsl(198 19% 51% / 0.1), 0 10px 25px hsl(198 19% 51% / 0.15);
+
+    /* Animation */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 151 33% 94%;
+
+    --sidebar-foreground: 242 36% 16%;
+
+    --sidebar-primary: 198 19% 51%;
+
+    --sidebar-primary-foreground: 151 33% 94%;
+
+    --sidebar-accent: 171 25% 80%;
+
+    --sidebar-accent-foreground: 242 36% 16%;
+
+    --sidebar-border: 171 25% 80%;
+
+    --sidebar-ring: 198 19% 51%;
+  }
+
+  .dark {
+    --background: 242 36% 16%;
+    --foreground: 151 33% 94%;
+
+    --card: 242 36% 20%;
+    --card-foreground: 151 33% 94%;
+
+    --popover: 242 36% 20%;
+    --popover-foreground: 151 33% 94%;
+
+    --primary: 198 19% 51%;
+    --primary-foreground: 151 33% 94%;
+
+    --secondary: 171 25% 69%;
+    --secondary-foreground: 242 36% 16%;
+
+    --muted: 242 36% 25%;
+    --muted-foreground: 171 25% 75%;
+
+    --accent: 171 25% 69%;
+    --accent-foreground: 242 36% 16%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 151 33% 94%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 242 36% 16%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 151 33% 94%;
+
+    --border: 242 36% 30%;
+    --input: 242 36% 30%;
+    --ring: 198 19% 51%;
+
+    --sidebar-background: 242 36% 16%;
+    --sidebar-foreground: 151 33% 94%;
+    --sidebar-primary: 198 19% 51%;
+    --sidebar-primary-foreground: 151 33% 94%;
+    --sidebar-accent: 242 36% 20%;
+    --sidebar-accent-foreground: 151 33% 94%;
+    --sidebar-border: 242 36% 30%;
+    --sidebar-ring: 198 19% 51%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+@layer components {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-success {
+    background: var(--gradient-success);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+}
