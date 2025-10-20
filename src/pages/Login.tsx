@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,9 +12,11 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signIn } = useAuth();
+  const role = searchParams.get("role") || "student";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +63,10 @@ const Login = () => {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <CardTitle className="text-2xl">Welcome Back</CardTitle>
+              <div>
+                <CardTitle className="text-2xl">Welcome Back</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1 capitalize">{role} Login</p>
+              </div>
             </div>
           </CardHeader>
           
@@ -119,7 +124,7 @@ const Login = () => {
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
                 Don't have an account?{" "}
-                <Link to="/register" className="text-primary hover:underline font-medium">
+                <Link to={`/register?role=${role}`} className="text-primary hover:underline font-medium">
                   Create one now
                 </Link>
               </p>

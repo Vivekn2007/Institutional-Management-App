@@ -58,10 +58,20 @@ const Welcome = () => {
               size="lg"
               variant="hero"
               className="w-full h-14 text-lg font-medium"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/login?role=student")}
             >
               <Target className="mr-3 h-5 w-5" />
-              Individual Login
+              Student Login
+            </Button>
+
+            <Button 
+              size="lg"
+              variant="hero"
+              className="w-full h-14 text-lg font-medium"
+              onClick={() => navigate("/login?role=professor")}
+            >
+              <BookOpen className="mr-3 h-5 w-5" />
+              Professor Login
             </Button>
           </div>
 

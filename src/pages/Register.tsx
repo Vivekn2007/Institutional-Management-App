@@ -1,22 +1,25 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ArrowLeft, User, Phone, Mail, Lock, Heart } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, User, Phone, Mail, Lock, Heart, GraduationCap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Register = () => {
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
     hobbies: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    role: searchParams.get("role") || "student"
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -45,7 +48,8 @@ const Register = () => {
       const { data, error } = await signUp(formData.email, formData.password, {
         name: formData.name,
         phone: formData.phone,
-        hobbies: formData.hobbies
+        hobbies: formData.hobbies,
+        role: formData.role
       });
       
       if (error) {
@@ -86,7 +90,10 @@ const Register = () => {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <CardTitle className="text-2xl">Create Account</CardTitle>
+              <div>
+                <CardTitle className="text-2xl">Create Account</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1 capitalize">{formData.role} Registration</p>
+              </div>
             </div>
           </CardHeader>
           
@@ -140,6 +147,25 @@ const Register = () => {
                     className="pl-10"
                     required
                   />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="role">Account Type</Label>
+                <div className="relative">
+                  <GraduationCap className="absolute left-3 top-3 h-4 w-4 text-muted-foreground z-10" />
+                  <Select
+                    value={formData.role}
+                    onValueChange={(value) => setFormData({ ...formData, role: value })}
+                  >
+                    <SelectTrigger className="pl-10">
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student</SelectItem>
+                      <SelectItem value="professor">Professor</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
