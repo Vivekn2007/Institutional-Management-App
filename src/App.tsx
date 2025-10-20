@@ -10,6 +10,7 @@ import Register from "./pages/Register";
 import InstituteRegister from "./pages/InstituteRegister";
 import InstituteDashboard from "./pages/InstituteDashboard";
 import DepartmentManagement from "./pages/DepartmentManagement";
+import DepartmentDetail from "./pages/DepartmentDetail";
 import ProfessorManagement from "./pages/ProfessorManagement";
 import Dashboard from "./pages/Dashboard";
 import TimetableOptions from "./pages/TimetableOptions";
@@ -72,6 +73,7 @@ function AppRoutes() {
         <Route path="/institute-register" element={<PublicRoute><InstituteRegister /></PublicRoute>} />
         <Route path="/institute-dashboard" element={<ProtectedRoute><InstituteDashboard /></ProtectedRoute>} />
         <Route path="/institute/departments" element={<ProtectedRoute><DepartmentManagement /></ProtectedRoute>} />
+        <Route path="/institute/departments/:departmentId" element={<ProtectedRoute><DepartmentDetail /></ProtectedRoute>} />
         <Route path="/institute/professors" element={<ProtectedRoute><ProfessorManagement /></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/timetable-options" element={<ProtectedRoute><TimetableOptions /></ProtectedRoute>} />
