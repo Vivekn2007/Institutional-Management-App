@@ -121,14 +121,24 @@ const Login = () => {
               </Button>
             </form>
 
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <Link to={`/register?role=${role}`} className="text-primary hover:underline font-medium">
-                  Create one now
-                </Link>
-              </p>
-            </div>
+            {role !== "student" && role !== "professor" && (
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  Don't have an account?{" "}
+                  <Link to={`/register?role=${role}`} className="text-primary hover:underline font-medium">
+                    Create one now
+                  </Link>
+                </p>
+              </div>
+            )}
+            
+            {(role === "student" || role === "professor") && (
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  Login credentials are provided by your institute
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
