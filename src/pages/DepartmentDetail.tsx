@@ -244,32 +244,35 @@ const DepartmentDetail = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {branches.map((branch) => (
-                <Card key={branch.id}>
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <BookOpen className="h-5 w-5" />
-                        {branch.name}
+                <Card key={branch.id} className="cursor-pointer transition-all hover:shadow-lg">
+                  <div onClick={() => navigate(`/institute/branches/${branch.id}/timetable-setup`)}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <BookOpen className="h-5 w-5" />
+                          {branch.name}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedBranch(branch);
+                            setShowDeleteDialog(true);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-1 text-sm text-muted-foreground">
+                        <p>Code: {branch.code}</p>
+                        <p>Duration: {branch.duration_years} years</p>
+                        <p>Semesters: {branch.total_semesters}</p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setSelectedBranch(branch);
-                          setShowDeleteDialog(true);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      <p>Code: {branch.code}</p>
-                      <p>Duration: {branch.duration_years} years</p>
-                      <p>Semesters: {branch.total_semesters}</p>
-                    </div>
-                  </CardContent>
+                    </CardContent>
+                  </div>
                 </Card>
               ))}
             </div>
