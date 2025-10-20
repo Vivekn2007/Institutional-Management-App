@@ -7,6 +7,10 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Welcome from "./pages/Welcome";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import InstituteRegister from "./pages/InstituteRegister";
+import InstituteDashboard from "./pages/InstituteDashboard";
+import DepartmentManagement from "./pages/DepartmentManagement";
+import ProfessorManagement from "./pages/ProfessorManagement";
 import Dashboard from "./pages/Dashboard";
 import TimetableOptions from "./pages/TimetableOptions";
 import DailySetup from "./pages/DailySetup";
@@ -65,6 +69,10 @@ function AppRoutes() {
         <Route path="/" element={<PublicRoute><Welcome /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        <Route path="/institute-register" element={<PublicRoute><InstituteRegister /></PublicRoute>} />
+        <Route path="/institute-dashboard" element={<ProtectedRoute><InstituteDashboard /></ProtectedRoute>} />
+        <Route path="/institute/departments" element={<ProtectedRoute><DepartmentManagement /></ProtectedRoute>} />
+        <Route path="/institute/professors" element={<ProtectedRoute><ProfessorManagement /></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/timetable-options" element={<ProtectedRoute><TimetableOptions /></ProtectedRoute>} />
         <Route path="/daily-setup" element={<ProtectedRoute><DailySetup /></ProtectedRoute>} />

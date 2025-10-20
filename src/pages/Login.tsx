@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Mail, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -17,6 +18,21 @@ const Login = () => {
   const { toast } = useToast();
   const { signIn } = useAuth();
   const role = searchParams.get("role") || "student";
+
+  useEffect(() => {
+    // Redirect to appropriate dashboard if already logged in
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        if (role === "institute") {
+          navigate("/institute-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
+      }
+    };
+    checkAuth();
+  }, [navigate, role]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +50,15 @@ const Login = () => {
       } else if (data.user) {
         toast({
           title: "Login successful!",
-          description: "Welcome back to TimeWise",
+          description: "Welcome back to ScholarSync",
         });
-        navigate("/dashboard");
+        
+        // Navigate based on role
+        if (role === "institute") {
+          navigate("/institute-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (error) {
       toast({
@@ -121,12 +143,12 @@ const Login = () => {
               </Button>
             </form>
 
-            {role !== "student" && role !== "professor" && (
+            {role === "institute" && (
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">
                   Don't have an account?{" "}
-                  <Link to={`/register?role=${role}`} className="text-primary hover:underline font-medium">
-                    Create one now
+                  <Link to="/institute-register" className="text-primary hover:underline font-medium">
+                    Register your institute
                   </Link>
                 </p>
               </div>

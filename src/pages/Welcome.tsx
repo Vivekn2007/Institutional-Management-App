@@ -44,14 +44,12 @@ const Welcome = () => {
           <div className="space-y-4">
             <Button 
               size="lg" 
-              className="w-full h-14 text-lg font-medium bg-muted hover:bg-muted/80 text-muted-foreground"
-              onClick={() => {}}
+              variant="hero"
+              className="w-full h-14 text-lg font-medium"
+              onClick={() => navigate("/login?role=institute")}
             >
               <BookOpen className="mr-3 h-5 w-5" />
               Institute Login
-              <span className="ml-2 text-xs bg-warning text-warning-foreground px-2 py-1 rounded-full">
-                Coming Soon
-              </span>
             </Button>
 
             <Button 
