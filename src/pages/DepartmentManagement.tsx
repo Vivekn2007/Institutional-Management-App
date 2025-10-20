@@ -5,10 +5,27 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Plus, Building2 } from "lucide-react";
+import { ArrowLeft, Plus, Building2, Edit, Trash2, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Department {
   id: string;
@@ -27,6 +44,10 @@ const DepartmentManagement = () => {
     description: "",
   });
   const [instituteId, setInstituteId] = useState<string>("");
+  const [selectedDept, setSelectedDept] = useState<Department | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -61,10 +82,79 @@ const DepartmentManagement = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { error } = await supabase.from("departments").insert({
-      institute_id: instituteId,
-      ...formData,
-    });
+    if (isEditing && selectedDept) {
+      const { error } = await supabase
+        .from("departments")
+        .update(formData)
+        .eq("id", selectedDept.id);
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message,
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Department updated successfully",
+        });
+        setShowForm(false);
+        setIsEditing(false);
+        setSelectedDept(null);
+        setFormData({ name: "", code: "", head_of_department: "", description: "" });
+        window.location.reload();
+      }
+    } else {
+      const { error } = await supabase.from("departments").insert({
+        institute_id: instituteId,
+        ...formData,
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: error.message,
+        });
+      } else {
+        toast({
+          title: "Success",
+          description: "Department added successfully",
+        });
+        setShowForm(false);
+        setFormData({ name: "", code: "", head_of_department: "", description: "" });
+        window.location.reload();
+      }
+    }
+  };
+
+  const handleDeptClick = (dept: Department) => {
+    setSelectedDept(dept);
+    setShowDetails(true);
+  };
+
+  const handleEdit = () => {
+    if (selectedDept) {
+      setFormData({
+        name: selectedDept.name,
+        code: selectedDept.code,
+        head_of_department: selectedDept.head_of_department || "",
+        description: "",
+      });
+      setIsEditing(true);
+      setShowDetails(false);
+      setShowForm(true);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedDept) return;
+
+    const { error } = await supabase
+      .from("departments")
+      .delete()
+      .eq("id", selectedDept.id);
 
     if (error) {
       toast({
@@ -75,10 +165,11 @@ const DepartmentManagement = () => {
     } else {
       toast({
         title: "Success",
-        description: "Department added successfully",
+        description: "Department deleted successfully",
       });
-      setShowForm(false);
-      setFormData({ name: "", code: "", head_of_department: "", description: "" });
+      setShowDeleteDialog(false);
+      setShowDetails(false);
+      setSelectedDept(null);
       window.location.reload();
     }
   };
@@ -147,7 +238,11 @@ const DepartmentManagement = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {departments.map((dept) => (
-            <Card key={dept.id}>
+            <Card 
+              key={dept.id} 
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105"
+              onClick={() => handleDeptClick(dept)}
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Building2 className="h-5 w-5" />
@@ -163,6 +258,77 @@ const DepartmentManagement = () => {
             </Card>
           ))}
         </div>
+
+        <Dialog open={showDetails} onOpenChange={setShowDetails}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5" />
+                {selectedDept?.name}
+              </DialogTitle>
+              <DialogDescription>
+                Manage department details and view related information
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-semibold">Department Code</Label>
+                <p className="text-sm text-muted-foreground">{selectedDept?.code}</p>
+              </div>
+              {selectedDept?.head_of_department && (
+                <div>
+                  <Label className="text-sm font-semibold">Head of Department</Label>
+                  <p className="text-sm text-muted-foreground">{selectedDept.head_of_department}</p>
+                </div>
+              )}
+              <div className="flex flex-col gap-2 pt-4">
+                <Button onClick={handleEdit} className="w-full">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Department
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    setShowDetails(false);
+                    navigate("/institute/professors");
+                  }}
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  View Professors
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  className="w-full"
+                  onClick={() => {
+                    setShowDetails(false);
+                    setShowDeleteDialog(true);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Department
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete the department "{selectedDept?.name}". This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
