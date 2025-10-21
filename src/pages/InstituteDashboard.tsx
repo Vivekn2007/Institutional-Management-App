@@ -18,6 +18,12 @@ interface Institute {
 const InstituteDashboard = () => {
   const [institute, setInstitute] = useState<Institute | null>(null);
   const [loading, setLoading] = useState(true);
+  const [counts, setCounts] = useState({
+    departments: 0,
+    professors: 0,
+    students: 0,
+    lectureHalls: 0,
+  });
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -41,9 +47,39 @@ const InstituteDashboard = () => {
           title: "Error loading institute",
           description: error.message,
         });
-      } else {
-        setInstitute(data);
+        setLoading(false);
+        return;
       }
+      
+      setInstitute(data);
+      
+      // Fetch counts
+      const [deptResult, profResult, studResult, hallResult] = await Promise.all([
+        supabase
+          .from("departments")
+          .select("id", { count: "exact", head: true })
+          .eq("institute_id", data.id),
+        supabase
+          .from("professors")
+          .select("id", { count: "exact", head: true })
+          .eq("institute_id", data.id),
+        supabase
+          .from("students")
+          .select("id", { count: "exact", head: true })
+          .eq("institute_id", data.id),
+        supabase
+          .from("lecture_halls")
+          .select("id", { count: "exact", head: true })
+          .eq("institute_id", data.id),
+      ]);
+
+      setCounts({
+        departments: deptResult.count || 0,
+        professors: profResult.count || 0,
+        students: studResult.count || 0,
+        lectureHalls: hallResult.count || 0,
+      });
+      
       setLoading(false);
     };
 
@@ -85,7 +121,7 @@ const InstituteDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Departments</p>
-                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-2xl font-bold">{counts.departments}</p>
                 </div>
                 <Building className="h-8 w-8 text-primary" />
               </div>
@@ -97,7 +133,7 @@ const InstituteDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Professors</p>
-                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-2xl font-bold">{counts.professors}</p>
                 </div>
                 <Users className="h-8 w-8 text-primary" />
               </div>
@@ -109,7 +145,7 @@ const InstituteDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Students</p>
-                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-2xl font-bold">{counts.students}</p>
                 </div>
                 <BookOpen className="h-8 w-8 text-primary" />
               </div>
@@ -121,7 +157,7 @@ const InstituteDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Lecture Halls</p>
-                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-2xl font-bold">{counts.lectureHalls}</p>
                 </div>
                 <Calendar className="h-8 w-8 text-primary" />
               </div>
