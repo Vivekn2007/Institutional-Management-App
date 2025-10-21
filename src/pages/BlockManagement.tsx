@@ -34,7 +34,7 @@ interface Branch {
 }
 
 const BlockManagement = () => {
-  const { departmentId: branchId } = useParams();
+  const { branchId } = useParams();
   const [branch, setBranch] = useState<Branch | null>(null);
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [loading, setLoading] = useState(true);
@@ -209,7 +209,17 @@ const BlockManagement = () => {
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
-              onClick={() => navigate("/institute/lecture-halls")}
+              onClick={async () => {
+                const { data: branchData } = await supabase
+                  .from("branches")
+                  .select("department_id")
+                  .eq("id", branchId)
+                  .single();
+                
+                if (branchData) {
+                  navigate(`/institute/departments/${branchData.department_id}/branches`);
+                }
+              }}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back

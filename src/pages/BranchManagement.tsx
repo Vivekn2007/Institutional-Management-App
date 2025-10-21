@@ -1,32 +1,36 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Building2, ArrowLeft } from "lucide-react";
+import { ArrowLeft, Building2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
+
+interface Branch {
+  id: string;
+  name: string;
+  code: string;
+  block_count?: number;
+}
 
 interface Department {
   id: string;
   name: string;
   code: string;
-  branch_count?: number;
 }
 
-const LectureHallsManagement = () => {
-  const [departments, setDepartments] = useState<Department[]>([]);
+const BranchManagement = () => {
+  const { departmentId } = useParams();
+  const [department, setDepartment] = useState<Department | null>(null);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
-  const [instituteId, setInstituteId] = useState<string>("");
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login?role=institute");
-      return;
-    }
+    if (!user || !departmentId) return;
 
     const fetchData = async () => {
       // Get institute
@@ -42,47 +46,61 @@ const LectureHallsManagement = () => {
           title: "Error",
           description: "Failed to load institute data",
         });
-        setLoading(false);
         return;
       }
 
-      setInstituteId(institute.id);
-
-      // Get departments with branch counts
-      const { data: departmentsData, error: departmentsError } = await supabase
+      // Get department
+      const { data: departmentData, error: deptError } = await supabase
         .from("departments")
         .select("*")
-        .eq("institute_id", institute.id)
-        .order("created_at", { ascending: false });
+        .eq("id", departmentId)
+        .single();
 
-      if (departmentsError) {
+      if (deptError) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: departmentsError.message,
+          description: deptError.message,
         });
-        setLoading(false);
         return;
       }
 
-      // Get branch counts for each department
-      const departmentsWithCounts = await Promise.all(
-        (departmentsData || []).map(async (department) => {
-          const { count } = await supabase
-            .from("branches")
-            .select("id", { count: "exact", head: true })
-            .eq("department_id", department.id);
+      setDepartment(departmentData);
 
-          return { ...department, branch_count: count || 0 };
+      // Get branches with block counts
+      const { data: branchesData, error: branchesError } = await supabase
+        .from("branches")
+        .select("*")
+        .eq("department_id", departmentId)
+        .order("created_at", { ascending: false });
+
+      if (branchesError) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: branchesError.message,
+        });
+        return;
+      }
+
+      // Get block counts for each branch
+      const branchesWithCounts = await Promise.all(
+        (branchesData || []).map(async (branch) => {
+          const { count } = await supabase
+            .from("blocks")
+            .select("id", { count: "exact", head: true })
+            .eq("branch_id", branch.id);
+
+          return { ...branch, block_count: count || 0 };
         })
       );
 
-      setDepartments(departmentsWithCounts);
+      setBranches(branchesWithCounts);
       setLoading(false);
     };
 
     fetchData();
-  }, [user, navigate, toast]);
+  }, [user, departmentId, navigate, toast]);
 
   if (loading) {
     return (
@@ -99,38 +117,40 @@ const LectureHallsManagement = () => {
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
-              onClick={() => navigate("/institute-dashboard")}
+              onClick={() => navigate("/institute/lecture-halls")}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-white">Lecture Halls Management</h1>
-              <p className="text-white/80 mt-1">Manage departments, branches, blocks, and rooms</p>
+              <h1 className="text-3xl font-bold text-white">
+                {department?.name} - Branches
+              </h1>
+              <p className="text-white/80 mt-1">Select a branch to manage blocks</p>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {departments.map((department) => (
+          {branches.map((branch) => (
             <Card
-              key={department.id}
+              key={branch.id}
               className="cursor-pointer hover:shadow-lg transition-shadow bg-white/95"
-              onClick={() => navigate(`/institute/departments/${department.id}/branches`)}
+              onClick={() => navigate(`/institute/branches/${branch.id}/blocks`)}
             >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Building2 className="h-5 w-5 text-primary" />
-                  {department.name}
+                  {branch.name}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">
-                    Code: <span className="font-medium">{department.code}</span>
+                    Code: <span className="font-medium">{branch.code}</span>
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Branches: <span className="font-medium">{department.branch_count}</span>
+                    Blocks: <span className="font-medium">{branch.block_count}</span>
                   </p>
                 </div>
               </CardContent>
@@ -138,10 +158,10 @@ const LectureHallsManagement = () => {
           ))}
         </div>
 
-        {departments.length === 0 && (
+        {branches.length === 0 && (
           <Card>
             <CardContent className="p-6 text-center">
-              <p className="text-muted-foreground">No departments found. Please add departments first.</p>
+              <p className="text-muted-foreground">No branches found for this department</p>
             </CardContent>
           </Card>
         )}
@@ -150,4 +170,4 @@ const LectureHallsManagement = () => {
   );
 };
 
-export default LectureHallsManagement;
+export default BranchManagement;
