@@ -17,6 +17,9 @@ const DepartmentDetail = lazy(() => import("./pages/DepartmentDetail"));
 const BranchTimetableSetup = lazy(() => import("./pages/BranchTimetableSetup"));
 const GeneratedBranchTimetable = lazy(() => import("./pages/GeneratedBranchTimetable"));
 const ProfessorManagement = lazy(() => import("./pages/ProfessorManagement"));
+const LectureHallsManagement = lazy(() => import("./pages/LectureHallsManagement"));
+const BlockManagement = lazy(() => import("./pages/BlockManagement"));
+const RoomManagement = lazy(() => import("./pages/RoomManagement"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const TimetableOptions = lazy(() => import("./pages/TimetableOptions"));
 const DailySetup = lazy(() => import("./pages/DailySetup"));
@@ -90,6 +93,9 @@ function AppRoutes() {
           <Route path="/institute/branches/:branchId/timetable-setup" element={<ProtectedRoute><BranchTimetableSetup /></ProtectedRoute>} />
           <Route path="/institute/branches/:branchId/timetable" element={<ProtectedRoute><GeneratedBranchTimetable /></ProtectedRoute>} />
           <Route path="/institute/professors" element={<ProtectedRoute><ProfessorManagement /></ProtectedRoute>} />
+          <Route path="/institute/lecture-halls" element={<ProtectedRoute><LectureHallsManagement /></ProtectedRoute>} />
+          <Route path="/institute/lecture-halls/:departmentId" element={<ProtectedRoute><BlockManagement /></ProtectedRoute>} />
+          <Route path="/institute/blocks/:blockId/rooms" element={<ProtectedRoute><RoomManagement /></ProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/timetable-options" element={<ProtectedRoute><TimetableOptions /></ProtectedRoute>} />
           <Route path="/daily-setup" element={<ProtectedRoute><DailySetup /></ProtectedRoute>} />

@@ -196,13 +196,13 @@ const InstituteDashboard = () => {
                   onClick={() => navigate("/institute/lecture-halls")}
                 >
                   <Plus className="h-4 w-4 mr-1" />
-                  Add Hall
+                  Manage Halls
                 </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground text-sm">
-                Manage lecture halls and their availability
+                Manage departments, blocks, and rooms
               </p>
             </CardContent>
           </Card>

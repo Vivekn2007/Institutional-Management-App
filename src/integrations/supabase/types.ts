@@ -103,6 +103,36 @@ export type Database = {
           },
         ]
       }
+      blocks: {
+        Row: {
+          building: string | null
+          created_at: string
+          department_id: string
+          floor: number | null
+          id: string
+          institute_id: string
+          name: string
+        }
+        Insert: {
+          building?: string | null
+          created_at?: string
+          department_id: string
+          floor?: number | null
+          id?: string
+          institute_id: string
+          name: string
+        }
+        Update: {
+          building?: string | null
+          created_at?: string
+          department_id?: string
+          floor?: number | null
+          id?: string
+          institute_id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       branches: {
         Row: {
           code: string
@@ -407,6 +437,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rooms: {
+        Row: {
+          block_id: string
+          capacity: number
+          created_at: string
+          facilities: string[] | null
+          id: string
+          institute_id: string
+          location: string | null
+          room_number: string
+          room_type: string | null
+        }
+        Insert: {
+          block_id: string
+          capacity: number
+          created_at?: string
+          facilities?: string[] | null
+          id?: string
+          institute_id: string
+          location?: string | null
+          room_number: string
+          room_type?: string | null
+        }
+        Update: {
+          block_id?: string
+          capacity?: number
+          created_at?: string
+          facilities?: string[] | null
+          id?: string
+          institute_id?: string
+          location?: string | null
+          room_number?: string
+          room_type?: string | null
+        }
+        Relationships: []
       }
       students: {
         Row: {
