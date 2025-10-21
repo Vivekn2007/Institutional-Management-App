@@ -105,27 +105,27 @@ export type Database = {
       }
       blocks: {
         Row: {
+          branch_id: string
           building: string | null
           created_at: string
-          department_id: string
           floor: number | null
           id: string
           institute_id: string
           name: string
         }
         Insert: {
+          branch_id: string
           building?: string | null
           created_at?: string
-          department_id: string
           floor?: number | null
           id?: string
           institute_id: string
           name: string
         }
         Update: {
+          branch_id?: string
           building?: string | null
           created_at?: string
-          department_id?: string
           floor?: number | null
           id?: string
           institute_id?: string

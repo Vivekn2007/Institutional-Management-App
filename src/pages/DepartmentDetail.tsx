@@ -245,7 +245,7 @@ const DepartmentDetail = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {branches.map((branch) => (
                 <Card key={branch.id} className="cursor-pointer transition-all hover:shadow-lg">
-                  <div onClick={() => navigate(`/institute/branches/${branch.id}/timetable-setup`)}>
+                  <div onClick={() => navigate(`/institute/lecture-halls/${branch.id}`)}>
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -270,6 +270,11 @@ const DepartmentDetail = () => {
                         <p>Code: {branch.code}</p>
                         <p>Duration: {branch.duration_years} years</p>
                         <p>Semesters: {branch.total_semesters}</p>
+                      </div>
+                      <div className="mt-3 pt-3 border-t">
+                        <p className="text-xs text-muted-foreground">
+                          Click to manage lecture halls and rooms
+                        </p>
                       </div>
                     </CardContent>
                   </div>

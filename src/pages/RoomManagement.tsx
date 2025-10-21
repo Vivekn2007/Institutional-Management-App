@@ -236,11 +236,11 @@ const RoomManagement = () => {
                 if (block) {
                   const { data } = await supabase
                     .from("blocks")
-                    .select("department_id")
+                    .select("branch_id")
                     .eq("id", block.id)
                     .single();
                   
-                  if (data) navigate(`/institute/lecture-halls/${data.department_id}`);
+                  if (data) navigate(`/institute/lecture-halls/${data.branch_id}`);
                 }
               }}
             >

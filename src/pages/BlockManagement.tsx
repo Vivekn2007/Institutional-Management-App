@@ -27,15 +27,15 @@ interface Block {
   room_count?: number;
 }
 
-interface Department {
+interface Branch {
   id: string;
   name: string;
   code: string;
 }
 
 const BlockManagement = () => {
-  const { departmentId } = useParams();
-  const [department, setDepartment] = useState<Department | null>(null);
+  const { departmentId: branchId } = useParams();
+  const [branch, setBranch] = useState<Branch | null>(null);
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -51,7 +51,7 @@ const BlockManagement = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!user || !departmentId) return;
+    if (!user || !branchId) return;
 
     const fetchData = async () => {
       // Get institute
@@ -72,29 +72,29 @@ const BlockManagement = () => {
 
       setInstituteId(institute.id);
 
-      // Get department
-      const { data: dept, error: deptError } = await supabase
-        .from("departments")
+      // Get branch
+      const { data: branchData, error: branchError } = await supabase
+        .from("branches")
         .select("*")
-        .eq("id", departmentId)
+        .eq("id", branchId)
         .single();
 
-      if (deptError) {
+      if (branchError) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: deptError.message,
+          description: branchError.message,
         });
         return;
       }
 
-      setDepartment(dept);
+      setBranch(branchData);
 
       // Get blocks with room counts
       const { data: blocksData, error: blocksError } = await supabase
         .from("blocks")
         .select("*")
-        .eq("department_id", departmentId)
+        .eq("branch_id", branchId)
         .order("created_at", { ascending: false });
 
       if (blocksError) {
@@ -123,13 +123,13 @@ const BlockManagement = () => {
     };
 
     fetchData();
-  }, [user, departmentId, navigate, toast]);
+  }, [user, branchId, navigate, toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const { error } = await supabase.from("blocks").insert({
-      department_id: departmentId,
+      branch_id: branchId,
       institute_id: instituteId,
       ...formData,
     });
@@ -155,7 +155,7 @@ const BlockManagement = () => {
     const { data } = await supabase
       .from("blocks")
       .select("*")
-      .eq("department_id", departmentId)
+      .eq("branch_id", branchId)
       .order("created_at", { ascending: false });
 
     if (data) {
@@ -216,9 +216,9 @@ const BlockManagement = () => {
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-white">
-                {department?.name} - Blocks
+                {branch?.name} - Blocks
               </h1>
-              <p className="text-white/80 mt-1">Manage blocks for this department</p>
+              <p className="text-white/80 mt-1">Manage blocks for this branch</p>
             </div>
           </div>
           <Button onClick={() => setShowForm(!showForm)}>
