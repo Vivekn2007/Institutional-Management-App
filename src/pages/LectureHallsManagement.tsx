@@ -7,15 +7,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 
-interface Department {
+interface Branch {
   id: string;
   name: string;
   code: string;
+  department_id: string;
   block_count?: number;
 }
 
 const LectureHallsManagement = () => {
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
   const [instituteId, setInstituteId] = useState<string>("");
   const { user } = useAuth();
@@ -48,35 +49,53 @@ const LectureHallsManagement = () => {
 
       setInstituteId(institute.id);
 
-      // Get departments with block counts
-      const { data: depts, error: deptsError } = await supabase
+      // Get all branches through departments
+      const { data: departments, error: deptError } = await supabase
         .from("departments")
-        .select("id, name, code")
+        .select("id")
         .eq("institute_id", institute.id);
 
-      if (deptsError) {
+      if (deptError) {
         toast({
           variant: "destructive",
           title: "Error",
-          description: deptsError.message,
+          description: deptError.message,
         });
         setLoading(false);
         return;
       }
 
-      // Get block counts for each department
-      const deptsWithCounts = await Promise.all(
-        (depts || []).map(async (dept) => {
+      const departmentIds = (departments || []).map(d => d.id);
+
+      // Get branches with block counts
+      const { data: branchesData, error: branchesError } = await supabase
+        .from("branches")
+        .select("id, name, code, department_id")
+        .in("department_id", departmentIds);
+
+      if (branchesError) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: branchesError.message,
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Get block counts for each branch
+      const branchesWithCounts = await Promise.all(
+        (branchesData || []).map(async (branch) => {
           const { count } = await supabase
             .from("blocks")
             .select("id", { count: "exact", head: true })
-            .eq("department_id", dept.id);
+            .eq("branch_id", branch.id);
 
-          return { ...dept, block_count: count || 0 };
+          return { ...branch, block_count: count || 0 };
         })
       );
 
-      setDepartments(deptsWithCounts);
+      setBranches(branchesWithCounts);
       setLoading(false);
     };
 
@@ -105,48 +124,48 @@ const LectureHallsManagement = () => {
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-white">Lecture Halls Management</h1>
-              <p className="text-white/80 mt-1">Select a department to manage blocks and rooms</p>
+              <p className="text-white/80 mt-1">Select a branch to manage blocks and rooms</p>
             </div>
           </div>
         </div>
 
-        {departments.length === 0 ? (
+        {branches.length === 0 ? (
           <Card>
             <CardContent className="p-6 text-center">
               <p className="text-muted-foreground">
-                No departments found. Please add departments first.
+                No branches found. Please add branches first.
               </p>
               <Button
                 className="mt-4"
                 onClick={() => navigate("/institute/departments")}
               >
-                Add Department
+                Add Branches
               </Button>
             </CardContent>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {departments.map((dept) => (
+            {branches.map((branch) => (
               <Card
-                key={dept.id}
+                key={branch.id}
                 className="cursor-pointer hover:shadow-lg transition-shadow bg-white/95"
-                onClick={() => navigate(`/institute/lecture-halls/${dept.id}`)}
+                onClick={() => navigate(`/institute/lecture-halls/${branch.id}`)}
               >
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Building2 className="h-5 w-5 text-primary" />
-                      {dept.name}
+                      {branch.name}
                     </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">
-                      Code: <span className="font-medium">{dept.code}</span>
+                      Code: <span className="font-medium">{branch.code}</span>
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      Blocks: <span className="font-medium">{dept.block_count}</span>
+                      Blocks: <span className="font-medium">{branch.block_count}</span>
                     </p>
                   </div>
                 </CardContent>
