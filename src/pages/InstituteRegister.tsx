@@ -48,7 +48,7 @@ const InstituteRegister = () => {
     setIsLoading(true);
 
     try {
-      // Sign up user
+      // Sign up user (role will be assigned separately in user_roles table)
       const { data: authData, error: authError } = await signUp(
         formData.email,
         formData.password,
@@ -56,7 +56,6 @@ const InstituteRegister = () => {
           name: formData.instituteName,
           phone: formData.phone,
           hobbies: "",
-          role: "institute_admin",
         }
       );
 

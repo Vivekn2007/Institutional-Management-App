@@ -45,11 +45,11 @@ const Register = () => {
     }
 
     try {
+      // Sign up user (role will be assigned separately in user_roles table)
       const { data, error } = await signUp(formData.email, formData.password, {
         name: formData.name,
         phone: formData.phone,
         hobbies: formData.hobbies,
-        role: formData.role
       });
       
       if (error) {

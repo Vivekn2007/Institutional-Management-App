@@ -18,6 +18,13 @@ export const generateStudentRollNumber = (
   return `${instituteCode}${yearCode}${branchCode}${random}`;
 };
 
+// Cryptographically secure random number generator
+const getSecureRandomInt = (max: number): number => {
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return array[0] % max;
+};
+
 export const generatePassword = (length: number = 8): string => {
   const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const lowercase = 'abcdefghijklmnopqrstuvwxyz';
@@ -26,14 +33,23 @@ export const generatePassword = (length: number = 8): string => {
   const allChars = uppercase + lowercase + numbers + symbols;
   
   let password = '';
-  password += uppercase[Math.floor(Math.random() * uppercase.length)];
-  password += lowercase[Math.floor(Math.random() * lowercase.length)];
-  password += numbers[Math.floor(Math.random() * numbers.length)];
-  password += symbols[Math.floor(Math.random() * symbols.length)];
+  // Ensure at least one character from each category
+  password += uppercase[getSecureRandomInt(uppercase.length)];
+  password += lowercase[getSecureRandomInt(lowercase.length)];
+  password += numbers[getSecureRandomInt(numbers.length)];
+  password += symbols[getSecureRandomInt(symbols.length)];
   
+  // Fill remaining length with random characters
   for (let i = password.length; i < length; i++) {
-    password += allChars[Math.floor(Math.random() * allChars.length)];
+    password += allChars[getSecureRandomInt(allChars.length)];
   }
   
-  return password.split('').sort(() => Math.random() - 0.5).join('');
+  // Shuffle the password using secure random
+  const passwordArray = password.split('');
+  for (let i = passwordArray.length - 1; i > 0; i--) {
+    const j = getSecureRandomInt(i + 1);
+    [passwordArray[i], passwordArray[j]] = [passwordArray[j], passwordArray[i]];
+  }
+  
+  return passwordArray.join('');
 };
